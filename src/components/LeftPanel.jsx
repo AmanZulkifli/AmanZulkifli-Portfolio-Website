@@ -3,21 +3,21 @@ import { useState, useEffect } from 'react';
 export default function LeftPanel() {
   const [time, setTime] = useState(new Date());
   const [onlineStatus, setOnlineStatus] = useState('offline');
-  const [showHelloPopup, setShowHelloPopup] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [form, setForm] = useState({ name: '', email: '', message: '' }); // State for form data
 
   useEffect(() => {
     const updateStatus = () => {
       const now = new Date();
-      const est = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
-      const hour = est.getHours();
-      const day = est.getDay();
+      const hour = now.getHours();
+      const day = now.getDay();
 
       if (day >= 1 && day <= 5) {
-        if (hour >= 9 && hour < 20) setOnlineStatus("online");
-        else if ((hour >= 7 && hour < 9) || (hour >= 20 && hour < 22)) setOnlineStatus("busy");
-        else setOnlineStatus("offline");
+        if (hour >= 9 && hour < 20) setOnlineStatus('online');
+        else if ((hour >= 7 && hour < 9) || (hour >= 20 && hour < 22)) setOnlineStatus('busy');
+        else setOnlineStatus('offline');
       } else {
-        setOnlineStatus("offline");
+        setOnlineStatus('offline');
       }
     };
 
@@ -31,104 +31,184 @@ export default function LeftPanel() {
     };
   }, []);
 
-  const { day, timeStr, timeZone } = (() => {
-    const options = {
-      weekday: "long",
-      hour: "numeric",
-      minute: "numeric",
-      timeZone: "America/New_York",
-      hour12: true,
-    };
-    const day = time.toLocaleDateString("en-US", { weekday: "long", timeZone: "America/New_York" });
-    const timeStr = time.toLocaleTimeString("en-US", options);
-    const abbr = new Date().toLocaleTimeString("en-US", {
-      timeZone: "America/New_York",
-      timeZoneName: "short",
-    }).includes("EDT") ? "EDT" : "EST";
-    return { day, timeStr, timeZone: abbr };
-  })();
+  const day = time.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Asia/Jakarta' });
+  const timeStr = time.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZone: 'Asia/Jakarta',
+    hour12: false,
+  });
 
-  const handleSayHello = () => {
-    setShowHelloPopup(true);
-    setTimeout(() => setShowHelloPopup(false), 3000);
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const mailtoLink = `mailto:amans172007@gmail.com?subject=Hello from ${form.name}&body=${encodeURIComponent(
+      form.message
+    )}%0D%0A%0D%0AFrom: ${form.name} (${form.email})`;
+
+    window.location.href = mailtoLink;
+    setIsModalOpen(false); // Close modal after sending
   };
 
   return (
-    <div className="p-6 h-full bg-[#fff5ee] text-[#1e1e1e] space-y-6 overflow-y-auto font-sans">
-      {/* Hello Popup */}
-      {showHelloPopup && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-orange-100 text-orange-800 px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-orange-400 rounded-full animate-pulse"></div>
-            <span>Hello! Let's connect!</span>
-          </div>
-        </div>
-      )}
-
+    <div className="p-6 h-full bg-[#fff5ee] text-[#1e1e1e] space-y-6 overflow-y-auto font-poppins">
       {/* Avatar & Name */}
       <div className="flex items-center gap-4">
         <div className="relative">
           <div className="w-16 h-16 rounded-full overflow-hidden border border-black/10">
             <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+              src="src/assets/profile.jpg"
               alt="Profile"
               className="object-cover w-full h-full"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E";
+                e.target.src = 'https://ui-avatars.com/api/?name=Aman+Zulkifli';
               }}
             />
           </div>
           <span
             className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white shadow-sm ${
-              onlineStatus === "online"
-                ? "bg-green-500"
-                : onlineStatus === "busy"
-                ? "bg-yellow-500"
-                : "bg-gray-400"
+              onlineStatus === 'online'
+                ? 'bg-green-500'
+                : onlineStatus === 'busy'
+                ? 'bg-yellow-500'
+                : 'bg-gray-400'
             }`}
             title={onlineStatus}
           />
         </div>
         <div>
           <h1 className="text-2xl font-extrabold">Aman Zulkifli</h1>
-          <p className="text-sm text-gray-600">Available between 9:00 AM — 8:00 PM {timeZone} 🌥️</p>
+          <p className="text-sm text-gray-600">Active around 09:00 – 20:00 WIB 🕒</p>
         </div>
       </div>
 
       {/* Status Widgets */}
       <div className="grid grid-cols-2 gap-4">
         {/* Date/Time */}
-        <div className="border border-dashed rounded-xl px-4 py-3">
+        <div className="border border-dashed rounded-xl px-4 py-3 bg-white/50">
           <p className="text-xs font-medium text-gray-500 mb-1">{day}</p>
           <p className="text-xl font-bold tracking-tight text-black">
-            {timeStr.split(' ')[0]} <span className="text-sm font-medium text-black">{timeZone}</span>
+            {timeStr} <span className="text-sm text-gray-500">WIB</span>
           </p>
         </div>
 
-        {/* Say Hello */}
+        {/* Say Hello Button */}
         <button
-          onClick={handleSayHello}
-          className="border border-dashed rounded-xl px-4 py-3 hover:bg-orange-50 transition"
+          onClick={() => setIsModalOpen(true)}
+          className="border border-dashed border-orange-300 rounded-xl px-4 py-3 hover:bg-orange-50 transition block"
         >
           <p className="text-xs font-medium text-gray-500 mb-1">📨 Send Message</p>
           <p className="text-base font-semibold text-orange-600">Say “Hello!”</p>
         </button>
       </div>
 
-      {/* Placeholder Box */}
-      <div className="border border-dashed rounded-xl px-4 py-10 text-center text-sm text-gray-500 italic">
-        Coming soon...
+      {/* Tagline / Placeholder */}
+      <div className="border flex items-center align-middle justify-center border-dashed h-70 rounded-xl px-4 py-8 text-center text-xl text-gray-500 italic bg-white/30">
+        🚧 Project space under construction. Stay tuned!
       </div>
 
-      {/* Description */}
-      <p className="text-sm text-black/80 leading-relaxed">
-        Combining creativity with technical expertise, I leverage my design and
-        development background to craft forward-thinking solutions while staying up-to-date with trends.
+      {/* Bio */}
+      <p className="text-xl text-black/80 leading-relaxed">
+            Still learning, always building — I’m passionate about design, code, and creating things that matter.
       </p>
 
       {/* Location */}
-      <p className="text-base font-bold text-black pt-2">Bogor, ID</p>
+      <p className="text-xl mt-50 font-bold text-black pt-2">Bogor, ID</p>
+
+      {/* Modal Form */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="max-w-2/7 w-full rounded-lg border border-dotted border-gray-400 bg-[#f7f2ee] p-10 relative">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-2 right-3 text-gray-500 text-xl hover:text-gray-700"
+            >
+              &times;
+            </button>
+            <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block font-semibold text-gray-400 text-lg mb-1"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  Name*
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={form.name}
+                  onChange={handleChange}
+                  className="w-full border-b border-gray-400 bg-transparent text-gray-400 text-lg mb-2 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block font-semibold text-gray-400 text-lg mb-1"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  Email*
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={handleChange}
+                  className="w-full border-b border-gray-400 bg-transparent text-gray-400 text-lg mb-2 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="message"
+                  className="block font-semibold text-gray-400 text-lg mb-1"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  Message*
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="4"
+                  required
+                  value={form.message}
+                  onChange={handleChange}
+                  className="w-full border-b border-gray-400 bg-transparent text-gray-400 text-lg resize-none focus:outline-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-between mt-4">
+                <button
+                  type="submit"
+                  className="text-orange-600 border border-dotted border-orange-600 rounded-full px-5 py-2 text-sm font-semibold font-sans hover:bg-orange-50"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  Send message
+                </button>
+                <p
+                  className="text-gray-500 ml-5 text-sm max-w-xs font-sans"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  By filling out this form, you consent to the collection and use of your
+                  information.
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
