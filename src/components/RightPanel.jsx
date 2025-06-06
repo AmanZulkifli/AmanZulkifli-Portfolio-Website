@@ -55,7 +55,7 @@ export default function RightPanel({ activeFile }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${btoa('YOUR_CLIENT_ID:YOUR_CLIENT_SECRET')}`,
+          Authorization: `Basic ${btoa('f10a67765ff343ee825b63f3eee59a9d:311514c5789e4af9932b40b836dc81a4')}`,
         },
         body: 'grant_type=client_credentials',
       });
@@ -191,27 +191,42 @@ export default function RightPanel({ activeFile }) {
     </div>
   );
 
-  const renderSpotifyPlaylists = () => (
-    <div className="space-y-4">
-      {spotifyPlaylists.map((playlist) => (
-        <div
-          key={playlist.id}
-          className="flex items-center gap-4 p-4 border rounded-lg hover:bg-[#f8e0d5] transition"
-        >
-          <img
-            src={playlist.images[0]?.url || '/placeholder.png'}
-            alt={playlist.name}
-            className="w-16 h-16 rounded"
-          />
-          <div>
-            <h3 className="text-lg font-bold text-[#5a4a42]">{playlist.name}</h3>
-            <p className="text-sm text-[#a38b7a]">{playlist.description || 'No description available'}</p>
-            <p className="text-sm text-[#5a4a42]">{playlist.tracks.total} songs</p>
-          </div>
+  const renderSpotifyPlaylists = () => {
+    if (spotifyPlaylists.length === 0) {
+      return (
+        <div className="text-center text-[#5a4a42]">
+          <p>No playlists found.</p>
         </div>
-      ))}
-    </div>
-  );
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        {spotifyPlaylists.map((playlist) => (
+          <div
+            key={playlist.id}
+            className="flex items-center gap-4 p-4 border rounded-lg hover:bg-[#f8e0d5] transition"
+          >
+            {/* Playlist Cover */}
+            <img
+              src={playlist.images?.[0]?.url || '/placeholder.png'}
+              alt={playlist.name}
+              className="w-16 h-16 rounded"
+            />
+
+            {/* Playlist Details */}
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-[#5a4a42] truncate">{playlist.name}</h3>
+              <p className="text-sm text-[#a38b7a] truncate">
+                {playlist.description || 'No description available'}
+              </p>
+              <p className="text-sm text-[#5a4a42]">{playlist.tracks.total} songs</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const renderEmptyState = () => (
     <div className="flex flex-col items-center justify-center h-full p-6 text-center">
