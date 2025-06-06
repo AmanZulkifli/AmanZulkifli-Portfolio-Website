@@ -1,0 +1,76 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Remove the body flex centering as it conflicts with our layout */
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Panel base styles */
+.left-panel,
+.middle-panel,
+.right-panel {
+  width: 100%; /* Force exact 1/3 width */
+  flex: 0 0 auto; /* Prevent flex-grow/shrink */
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Specific panel styles */
+.left-panel {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  border-right: 2px dashed #d4b8a8; /* Match your design */
+  background-color: #fff5ee; /* Match your color scheme */
+}
+
+.middle-panel {
+  border-right: 2px dashed #d4b8a8;
+  background-color: #fff5ee;
+}
+
+.right-panel {
+  background-color: #fff5ee;
+}
+
+/* Remove media queries that might interfere */
+/* @media (max-width: 768px) {
+  .left-panel {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+} */
+
+/* Keep your other styles but remove conflicting ones */
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
