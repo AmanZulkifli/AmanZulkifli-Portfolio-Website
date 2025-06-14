@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { folderStructure } from '../../../data/folderStructure';
 import { spotifyPlaylists } from '../../../data/spotifyPlaylists';
-import Breadcrumbs from './components/Breadcrumbs';
+import Breadcrumbs from './components/BreadCrumbs';
 import ViewModeToggle from './components/ViewModeToggle';
 import GridView from './components/GridView';
 import ListView from './components/ListView';
