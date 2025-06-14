@@ -1,8 +1,7 @@
-// App.jsx
 import { useState } from 'react';
-import LeftPanel from './components/LeftPanel';
-import MiddlePanel from './components/MiddlePanel';
-import RightPanel from './components/RightPanel';
+import LeftPanel from './components/panels/LeftPanel/LeftPanel';
+import MiddlePanel from './components/panels/MiddlePanel/MiddlePanel';
+import RightPanel from './components/panels/RightPanel/RightPanel';
 
 export default function App() {
   const [activeFile, setActiveFile] = useState(null);

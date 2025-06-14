@@ -16,7 +16,7 @@ export const spotifyPlaylists = {
   Berkabut_Berdebu: {
     title: 'Berkabut Berdebu',
     description: 'preloved songs',
-    imageUrl: 'src/assets/Berkabut.jpeg',
+    imageUrl: '/Berkabut.jpeg',
     trackCount: 131,
     playlistUrl: 'https://open.spotify.com/playlist/2LldL89MOwYwDtscxFCcFs?si=c98565cbdcf74c45'
   }
