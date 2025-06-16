@@ -17,6 +17,10 @@
   --color-text-light: #a38b7a;
 }
 
+* {
+  cursor: none !important;
+}
+
 @font-face {
   font-family: 'PixelFont';
   src: url('fonts/PerfectDOSVGA437Win.ttf') format('truetype');
@@ -49,6 +53,9 @@ body {
   z-index: 1000;
 }
 
+* {
+  cursor: url('/nat927.ani');
+}
 .crt-glow {
   background: radial-gradient(ellipse at center, rgba(232, 168, 124, 0.2) 0%, rgba(232, 168, 124, 0) 60%);
 }

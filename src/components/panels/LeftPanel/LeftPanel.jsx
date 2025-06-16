@@ -120,9 +120,8 @@ export default function LeftPanel() {
       <div className="p-3 bg-[#f8e0d5] border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] pixel-corners">
         <h3 className="text-xs font-bold text-[#a38b7a] mb-1">ABOUT ME</h3>
         <p className="text-xs leading-relaxed">
-          Still learning, always building — passionate about design, code, and creating meaningful things.
-          Currently focused on frontend development with React and Next.js.
-        </p>
+          Still learning, always building and passionate about design, code, and creating meaningful things.
+          Currently focused on frontend development with React, Tailwind, and Bootstrap CSS. I also have experience working with the Laravel framework for backend development.        </p>
       </div>
 
       {/* Project Info */}
