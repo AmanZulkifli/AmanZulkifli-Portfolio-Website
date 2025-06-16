@@ -42,73 +42,117 @@ export default function LeftPanel() {
     setIsModalOpen(false);
   };
 
+  const statusColors = {
+    online: 'bg-green-500',
+    busy: 'bg-yellow-400',
+    offline: 'bg-gray-400',
+  };
+
+  const statusText = {
+    online: 'Available',
+    busy: 'Busy',
+    offline: 'Offline',
+  };
+
   return (
-    <div className="p-6 h-full bg-[#fff5ee] text-[#1e1e1e] space-y-6 overflow-y-auto font-poppins">
+    <div className="p-4 h-full bg-[#f0d5c4] text-[#5a4a42] space-y-4 overflow-y-auto pixel-font border-r-2 border-[#d4b8a8]">
       {/* Profile Card */}
-      <div className="flex items-center gap-4 rounded-xl p-4 bg-white/60 shadow-sm">
-        <div className="relative w-20 h-20 rounded-full overflow-hidden border border-black/10">
-          <img
-            src="/profile.jpg"
-            alt="Profile"
-            className="object-cover w-full h-full"
-            onError={(e) => { e.target.onerror = null; e.target.src = 'https://ui-avatars.com/api/?name=Aman+Zulkifli'; }}
-          />
-          <span
-            className={`absolute z-10 bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white shadow ${{
-              online: 'bg-green-500', busy: 'bg-yellow-500', offline: 'bg-gray-400'
-            }[onlineStatus]}`}
-            title={onlineStatus}
-          />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold">Aman Zulkifli</h1>
-          <p className="text-sm text-gray-600">Active 09:00–20:00 WIB 🕒</p>
+      <div className="p-3 bg-[#f8e0d5] border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] pixel-corners">
+        <div className="flex items-center gap-3">
+          <div className="relative w-16 h-16 pixel-corners overflow-hidden border-2 border-[#d4b8a8]">
+            <img
+              src="/profile.jpg"
+              alt="Profile"
+              className="object-cover w-full h-full"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://ui-avatars.com/api/?name=Aman+Zulkifli';
+              }}
+            />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold">AMAN ZULKIFLI</h1>
+            <p className="text-xs text-[#a38b7a]">FRONTEND DEVELOPER</p>
+            <div className="flex items-center gap-1 mt-1">
+              <span className={`w-2 h-2 pixel-corners ${statusColors[onlineStatus]}`}></span>
+              <p className="text-xs">{statusText[onlineStatus]}</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Widgets */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-xl border border-dashed p-4 bg-white/40 shadow-inner">
-          <p className="text-xs text-gray-500 font-medium mb-1">{day}</p>
-          <p className="text-xl font-bold text-black tracking-tight">{timeStr} <span className="text-sm text-gray-500">WIB</span></p>
+      {/* Quick Info Section */}
+      <div className="p-3 bg-[#f8e0d5] border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] pixel-corners space-y-2">
+        <div className="flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="#5a4a42">
+            <rect x="1" y="1" width="14" height="14" rx="1" fill="#e8a87c"/>
+            <rect x="3" y="3" width="10" height="10" rx="0.5" fill="#f8e0d5"/>
+          </svg>
+          <p className="text-xs">ACTIVE 09:00–20:00 WIB</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="#5a4a42">
+            <rect x="1" y="1" width="14" height="14" rx="1" fill="#e8a87c"/>
+            <rect x="4" y="4" width="8" height="8" rx="0.5" fill="#f8e0d5"/>
+          </svg>
+          <p className="text-xs">BOGOR, INDONESIA</p>
+        </div>
+      </div>
+
+      {/* Date & Action Widgets */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="p-2 bg-[#f8e0d5] border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] pixel-corners">
+          <p className="text-xs text-[#a38b7a]">{day}</p>
+          <p className="text-lg font-bold tracking-tight">
+            {timeStr} <span className="text-xs">WIB</span>
+          </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="rounded-xl border border-orange-300 border-dashed p-4 hover:bg-orange-100 transition-colors shadow"
+          className="p-2 bg-[#f8e0d5] border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] pixel-corners hover:bg-[#e8a87c] hover:text-[#fff5ee] transition-colors"
         >
-          <p className="text-xs text-gray-500 font-medium mb-1">📨 Send Message</p>
-          <p className="text-base text-orange-600 font-semibold">Say “Hello!”</p>
+          <p className="text-xs">📨 SEND MESSAGE</p>
+          <p className="text-sm font-semibold">SAY "HELLO!"</p>
         </button>
       </div>
 
-      {/* Placeholder Block */}
-      <div className="rounded-xl border border-dashed p-6 text-center italic text-gray-500 bg-white/30 shadow-inner">
-        🚧 Project space under construction. Stay tuned!
+      {/* Bio Section */}
+      <div className="p-3 bg-[#f8e0d5] border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] pixel-corners">
+        <h3 className="text-xs font-bold text-[#a38b7a] mb-1">ABOUT ME</h3>
+        <p className="text-xs leading-relaxed">
+          Still learning, always building — passionate about design, code, and creating meaningful things.
+          Currently focused on frontend development with React and Next.js.
+        </p>
       </div>
 
-      {/* Bio */}
-      <p className="text-black/80 text-lg leading-relaxed">
-        Still learning, always building — I’m passionate about design, code, and creating things that matter.
-      </p>
-
-      {/* Location */}
-      <p className="text-lg font-semibold text-black pt-2">📍 Bogor, ID</p>
+      {/* Project Info */}
+      <div className="p-3 bg-[#f8e0d5] border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] pixel-corners text-center">
+        <div className="inline-block p-2 bg-[#e8a87c] pixel-corners mb-1">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="#fff5ee">
+            <rect x="1" y="1" width="14" height="14" rx="1" fill="#5a4a42"/>
+            <rect x="3" y="3" width="10" height="10" rx="0.5" fill="#f8e0d5"/>
+          </svg>
+        </div>
+        <h3 className="text-xs font-bold text-[#5a4a42] mb-1">PROJECT SPACE</h3>
+        <p className="text-xs text-[#a38b7a] italic">🚧 UNDER CONSTRUCTION</p>
+      </div>
 
       {/* Contact Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center px-4">
-          <div className="w-full max-w-lg bg-white rounded-2xl p-8 shadow-lg relative">
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4">
+          <div className="w-full max-w-md bg-[#f8e0d5] border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] pixel-corners p-4 relative">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl"
+              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-[#e8a87c] text-[#fff5ee] pixel-corners"
             >
-              &times;
+              ×
             </button>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <h2 className="text-lg font-bold mb-3">GET IN TOUCH</h2>
+            <form onSubmit={handleSubmit} className="space-y-3">
               {['name', 'email', 'message'].map((field) => (
                 <div key={field}>
-                  <label htmlFor={field} className="block text-gray-600 font-medium capitalize mb-1">
-                    {field}*
+                  <label htmlFor={field} className="block text-xs font-bold text-[#5a4a42] mb-1">
+                    {field.toUpperCase()}*
                   </label>
                   {field === 'message' ? (
                     <textarea
@@ -118,7 +162,8 @@ export default function LeftPanel() {
                       required
                       value={form[field]}
                       onChange={handleChange}
-                      className="w-full border-b border-gray-300 bg-transparent text-gray-700 placeholder:text-gray-400 focus:outline-none resize-none"
+                      placeholder="Type your message..."
+                      className="w-full border-2 border-[#d4b8a8] bg-[#fff5ee] text-[#5a4a42] placeholder:text-[#a38b7a] p-2 text-xs pixel-corners"
                     />
                   ) : (
                     <input
@@ -128,19 +173,20 @@ export default function LeftPanel() {
                       required
                       value={form[field]}
                       onChange={handleChange}
-                      className="w-full border-b border-gray-300 bg-transparent text-gray-700 placeholder:text-gray-400 focus:outline-none"
+                      placeholder={`Enter your ${field}`}
+                      className="w-full border-2 border-[#d4b8a8] bg-[#fff5ee] text-[#5a4a42] placeholder:text-[#a38b7a] p-2 text-xs pixel-corners"
                     />
                   )}
                 </div>
               ))}
-              <div className="flex justify-between items-center mt-6">
+              <div className="flex justify-between items-center mt-4">
                 <button
                   type="submit"
-                  className="bg-orange-500 text-white rounded-full px-6 py-2 text-sm font-medium hover:bg-orange-600 transition"
+                  className="bg-[#e8a87c] text-[#fff5ee] pixel-corners px-4 py-1 text-xs font-bold hover:bg-[#d4b8a8] transition-colors"
                 >
-                  Send Message
+                  SEND MESSAGE
                 </button>
-                <p className="text-xs text-gray-500 max-w-xs">
+                <p className="text-xs text-[#a38b7a] max-w-[160px]">
                   By submitting, you agree to our information handling policy.
                 </p>
               </div>

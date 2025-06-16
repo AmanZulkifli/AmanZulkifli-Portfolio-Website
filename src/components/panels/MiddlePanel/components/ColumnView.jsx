@@ -1,89 +1,168 @@
+import { useState, useEffect } from 'react';
+
+function FolderIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20">
+      <rect 
+        x="1" 
+        y="3" 
+        width="18" 
+        height="14" 
+        rx="1" 
+        fill="#f8e0d5"
+        stroke="#e8a87c"
+        strokeWidth="1.5"
+      />
+      <rect 
+        x="3" 
+        y="5" 
+        width="10" 
+        height="2" 
+        fill="#e8a87c"
+      />
+    </svg>
+  );
+}
+
+function FileIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20">
+      <rect 
+        x="3" 
+        y="3" 
+        width="14" 
+        height="14" 
+        rx="1" 
+        fill="#f8e0d5"
+        stroke="#e8a87c"
+        strokeWidth="1.5"
+      />
+      <rect 
+        x="5" 
+        y="5" 
+        width="10" 
+        height="2" 
+        fill="#e8a87c"
+      />
+    </svg>
+  );
+}
+
 export default function ColumnView({ 
   items, 
-  currentFolder, 
-  activeFile, 
-  onItemClick, 
   folderStructure, 
-  spotifyPlaylists 
+  spotifyPlaylists,
+  currentFolder,
+  onFileSelect,
+  onNavigateToFolder,
+  path,
+  setPath
 }) {
-  return (
-    <div className="flex w-full h-full">
-      <div className="w-1/3 pr-4 border-r border-dashed border-[#d4b8a8]">
-        {items.map((item, index) => {
-          const formattedName = item.replace(/ /g, '_');
-          const isFolder = folderStructure[formattedName]?.type === 'folder';
-          const isSpotify = currentFolder === 'Spotify_Playlists';
-          const isTetris = formattedName === 'Tetris';
+  const [activeColumns, setActiveColumns] = useState([]);
 
-          return (
-            <div
-              key={index}
-              onClick={() => onItemClick(item, isFolder)}
-              className={`flex items-center p-2 rounded ${
-                activeFile === formattedName 
-                  ? 'bg-[#f8e0d5]' 
-                  : 'hover:bg-[#f8e0d5]'
-              } cursor-pointer transition-all pixel-corners`}
-            >
-              {isFolder ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="mr-2">
-                  <path d="M22 19V8C22 7.44772 21.5523 7 21 7H13L11 4H3C2.44772 4 2 4.44772 2 5V19C2 19.5523 2.44772 20 3 20H21C21.5523 20 22 19.5523 22 19Z" 
-                    stroke="#e8a87c" strokeWidth="1.5"/>
-                </svg>
-              ) : isSpotify ? (
-                <div className="w-5 h-5 mr-2 relative">
-                  <img 
-                    src={spotifyPlaylists[formattedName.replace('.pdf', '')]?.imageUrl} 
-                    alt={item} 
-                    className="w-full h-full object-cover rounded-full border border-[#e8a87c]"
-                  />
-                </div>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="mr-2">
-                  <path d="M14 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V8M14 3L19 8M14 3V8H19" 
-                    stroke="#e8a87c" strokeWidth="1.5"/>
-                </svg>
-              )}
-              <p className="text-sm text-[#5a4a42] truncate">{item.replace(/_/g, ' ')}</p>
-            </div>
-          );
-        })}
-      </div>
+  useEffect(() => {
+    const buildColumns = () => {
+      const columns = [];
+      let currentItems = items;
+      let currentPath = ['root'];
 
-      {activeFile && folderStructure[activeFile] && (
-        <div className="w-2/3 pl-4">
-          {folderStructure[activeFile].items.map((subItem, index) => {
-            const subFormattedName = subItem.replace(/ /g, '_');
-            const isSubFolder = folderStructure[subFormattedName]?.type === 'folder';
+      columns.push({ path: currentPath, items: currentItems });
+
+      for (const folder of path.slice(1)) {
+        const formattedName = folder.replace(/ /g, '_');
+        if (folderStructure[formattedName]?.items) {
+          currentPath = [...currentPath, formattedName];
+          currentItems = folderStructure[formattedName].items;
+          columns.push({ path: currentPath, items: currentItems });
+        } else {
+          break;
+        }
+      }
+
+      setActiveColumns(columns);
+    };
+
+    buildColumns();
+  }, [path, items, folderStructure]);
+
+  const handleItemClick = (item, columnIndex) => {
+    const formattedName = item.replace(/ /g, '_');
+    const isFolder = folderStructure[formattedName]?.type === 'folder';
+
+    if (isFolder) {
+      const newPath = path.slice(0, columnIndex + 1).concat(formattedName);
+      setPath(newPath);
+      onNavigateToFolder(item);
+    } else {
+      const cleanedName = formattedName.replace('.pdf', '');
+      const spotify = spotifyPlaylists[cleanedName];
+      onFileSelect(spotify || cleanedName);
+    }
+  };
+
+  const renderColumn = (column, columnIndex) => {
+    const isLastColumn = columnIndex === activeColumns.length - 1;
+
+    return (
+      <div 
+        key={columnIndex}
+        className={`w-64 flex-shrink-0 border-r-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] flex flex-col h-full bg-[#f0d5c4]`}
+      >
+        <div 
+          className="p-2 text-sm font-medium text-[#5a4a42] cursor-pointer hover:bg-[#f8e0d5] border-b-2 border-[#d4b8a8] pixel-font flex items-center gap-2"
+          onClick={() => setPath(column.path)}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <rect x="1" y="1" width="14" height="14" rx="1" fill="#e8a87c"/>
+          </svg>
+          {column.path[column.path.length - 1] === 'root' ? 'Home' : 
+           column.path[column.path.length - 1].replace(/_/g, ' ')}
+        </div>
+        
+        <div className="flex-1 overflow-y-auto p-1">
+          {column.items.map((item, index) => {
+            const formattedName = item.replace(/ /g, '_');
+            const isFolder = folderStructure[formattedName]?.type === 'folder';
+            const isSpotify = column.path.includes('Spotify_Playlists');
+            const isActive = isLastColumn && path[path.length - 1] === formattedName;
+
             return (
               <div
                 key={index}
-                onClick={() => {
-                  if (isSubFolder) {
-                    onItemClick(subItem, true);
-                  } else {
-                    onItemClick(subItem, false);
-                  }
-                }}
-                className="flex items-center p-2 hover:bg-[#f8e0d5] cursor-pointer transition-all pixel-corners"
+                onClick={() => handleItemClick(item, columnIndex)}
+                className={`flex items-center gap-2 p-2 rounded-sm border-2 ${
+                  isActive 
+                    ? 'border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] bg-[#f8e0d5]' 
+                    : 'border-t-[#d4b8a8] border-l-[#d4b8a8] border-r-[#fff5ee] border-b-[#fff5ee] hover:bg-[#f8e0d5]'
+                } cursor-pointer transition-all pixel-corners`}
               >
-                {isSubFolder ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="mr-2">
-                    <path d="M22 19V8C22 7.44772 21.5523 7 21 7H13L11 4H3C2.44772 4 2 4.44772 2 5V19C2 19.5523 2.44772 20 3 20H21C21.5523 20 22 19.5523 22 19Z" 
-                      stroke="#e8a87c" strokeWidth="1.5"/>
-                  </svg>
+                {isFolder ? (
+                  <FolderIcon />
+                ) : isSpotify ? (
+                  <div className="w-5 h-5 flex-shrink-0 pixel-corners">
+                    <img
+                      src={spotifyPlaylists[formattedName.replace('.pdf', '')]?.imageUrl}
+                      alt={item}
+                      className="w-full h-full object-cover pixel-corners border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8]"
+                    />
+                  </div>
                 ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="mr-2">
-                    <path d="M14 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V8M14 3L19 8M14 3V8H19" 
-                      stroke="#e8a87c" strokeWidth="1.5"/>
-                  </svg>
+                  <FileIcon />
                 )}
-                <p className="text-sm text-[#5a4a42] truncate">{subItem}</p>
+                <p className="text-sm text-[#5a4a42] truncate pixel-font">
+                  {item.replace(/_/g, ' ')}
+                </p>
               </div>
             );
           })}
         </div>
-      )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex w-full h-full overflow-x-auto bg-[#f0d5c4] p-1 pixel-corners">
+      {activeColumns.map(renderColumn)}
     </div>
   );
 }

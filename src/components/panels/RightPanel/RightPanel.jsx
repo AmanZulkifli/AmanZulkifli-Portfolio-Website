@@ -44,7 +44,6 @@ export default function RightPanel({ activeFile }) {
 
     setIsLoading(true);
 
-    // Handle different file types
     if (typeof activeFile === 'string') {
       const lower = activeFile.toLowerCase().replace(/_/g, ' ');
 
@@ -76,7 +75,6 @@ export default function RightPanel({ activeFile }) {
         setActiveTab(null);
       }
     } else if (activeFile?.title) {
-      // This is a Spotify playlist object
       setSelectedItem({ type: 'spotify', data: activeFile });
       setActiveTab(null);
     }
@@ -90,7 +88,7 @@ export default function RightPanel({ activeFile }) {
   };
 
   return (
-    <div className={`right-panel h-full w-full p-6 bg-[#fff5ee] overflow-y-auto ${isGlitch ? 'glitch-effect' : ''}`}>
+    <div className={`right-panel h-full w-full p-4 bg-[#f0d5c4] overflow-y-auto border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] ${isGlitch ? 'glitch-effect' : ''}`}>
       {isLoading ? (
         <LoadingState />
       ) : !activeFile ? (

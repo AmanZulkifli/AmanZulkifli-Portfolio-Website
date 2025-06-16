@@ -1,8 +1,50 @@
 export default function FolderIcon({ size = 32 }) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 64 64">
-      <path fill="#cda1a7" d="M50,53H4c-1.657,0-3-1.343-3-3V9c0-1.105,0.895-2,2-2h13.255c1.237,0,2.422,0.502,3.283,1.391 l3.625,3.744C23.698,12.688,24.434,13,25.204,13H51c1.105,0,2,0.895,2,2v34.011C53,51.447,52,53,50,53z"></path>
-      <path fill="#8d6c9f" d="M50,54H4c-2.206,0-4-1.794-4-4V9c0-1.654,1.346-3,3-3h13.255c1.5,0,2.958,0.618,4.001,1.695 l3.625,3.745c0.345,0.356,0.827,0.56,1.323,0.56H51c1.654,0,3,1.346,3,3v34.011C54,52.135,52.505,54,50,54z M3,8 C2.449,8,2,8.449,2,9v41c0,1.103,0.897,2,2,2h46c1.327,0,2-1.006,2-2.989V15c0-0.551-0.448-1-1-1H25.204 c-1.034,0-2.04-0.426-2.759-1.169L18.82,9.086C18.151,8.396,17.216,8,16.255,8H3z"></path>
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 32 32" 
+      className="pixel-corners"
+    >
+      {/* Folder body with 90s bevel effect */}
+      <rect 
+        x="2" 
+        y="4" 
+        width="28" 
+        height="24" 
+        rx="2" 
+        fill="#e8a87c"
+        stroke="#d4b8a8"
+        strokeWidth="2"
+      />
+      
+      {/* Folder tab */}
+      <path 
+        d="M24,4 H12 C10,4 8,6 8,8 V10 H26 V8 C26,6 24,4 24,4 Z" 
+        fill="#f8e0d5"
+        stroke="#d4b8a8"
+        strokeWidth="2"
+      />
+      
+      {/* Folder highlight */}
+      <rect 
+        x="4" 
+        y="6" 
+        width="24" 
+        height="4" 
+        fill="#fff5ee" 
+        fillOpacity="0.3"
+      />
+      
+      {/* Folder shadow */}
+      <rect 
+        x="6" 
+        y="26" 
+        width="22" 
+        height="2" 
+        fill="#5a4a42" 
+        fillOpacity="0.2"
+      />
     </svg>
   );
 }

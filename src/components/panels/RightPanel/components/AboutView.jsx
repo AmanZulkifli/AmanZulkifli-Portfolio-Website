@@ -1,34 +1,33 @@
 export default function AboutView() {
   return (
-    <div className="space-y-4 animate-fade-in">
-      <div className="relative h-48 rounded-lg overflow-hidden bg-gradient-to-br from-[#e8a87c]/20 to-[#f8e0d5]/20">
+    <div className="space-y-3">
+      <div className="relative h-40 pixel-corners overflow-hidden border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8]">
         <img 
           src="/about.jpg" 
           alt="About Me" 
           className="w-full h-full object-cover" 
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-        <div className="absolute inset-0 m-2" />
-        <div className="absolute bottom-4 left-4">
-          <h2 className="text-xl font-bold text-white">About Me</h2>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <div className="absolute bottom-2 left-2">
+          <h2 className="text-lg font-bold text-[#fff5ee] pixel-font">ABOUT ME</h2>
         </div>
       </div>
 
-      <div className="space-y-3">
-        <p className="text-[#5a4a42]">
-          Hey, I'm Tegar Badruzzaman Zulkifli, a web development student and aspiring full-stack developer with a growing portfolio of real-world projects. I specialize in combining design thinking with technical skills to build meaningful digital experiences.
+      <div className="space-y-2 text-xs">
+        <p>
+          Hey, I'm Tegar Badruzzaman Zulkifli, a web development student and aspiring full-stack developer with a growing portfolio of real-world projects.
         </p>
-        <p className="text-[#5a4a42]">
-          My experience includes creating product-based websites, information systems, and user-centered applications. I'm passionate about learning, leading, and delivering thoughtful solutions that solve real problems — both through code and collaboration.
+        <p>
+          My experience includes creating product-based websites, information systems, and user-centered applications.
         </p>
 
-        <div className="mt-4">
-          <h3 className="font-bold text-[#5a4a42] mb-3">Expertise & Skills:</h3>
-          <div className="grid grid-cols-2 gap-3">
+        <div className="mt-3">
+          <h3 className="font-bold text-[#5a4a42] mb-2 border-b-2 border-[#d4b8a8] pb-1">EXPERTISE & SKILLS:</h3>
+          <div className="grid grid-cols-2 gap-2">
             {['User Experience', 'User Interface', 'Front-End Development', 'Back-End Development', 'Project Management', 'HTML/CSS/JS', 'ReactJS', 'Laravel', 'MySQL', 'Bootstrap', 'Tailwind', 'GitHub'].map((skill) => (
-              <div key={skill} className="flex items-center space-x-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#e8a87c]"></span>
-                <span className="text-sm text-[#5a4a42]">{skill}</span>
+              <div key={skill} className="flex items-center">
+                <span className="w-1.5 h-1.5 pixel-corners bg-[#e8a87c] mr-1"></span>
+                <span className="text-xs">{skill}</span>
               </div>
             ))}
           </div>

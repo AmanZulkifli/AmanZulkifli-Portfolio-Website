@@ -1,4 +1,5 @@
 import FolderIcon from './FolderIcon';
+
 export default function GridView({ 
   items, 
   currentFolder, 
@@ -10,12 +11,11 @@ export default function GridView({
   setHoveredItem 
 }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-2 bg-[#f0d5c4] pixel-corners">
       {items.map((item, index) => {
         const formattedName = item.replace(/ /g, '_');
         const isFolder = folderStructure[formattedName]?.type === 'folder';
         const isSpotify = currentFolder === 'Spotify_Playlists';
-        const isTetris = formattedName === 'Tetris';
         
         return (
           <div
@@ -23,35 +23,51 @@ export default function GridView({
             onClick={() => onItemClick(item, isFolder)}
             onMouseEnter={() => setHoveredItem(formattedName)}
             onMouseLeave={() => setHoveredItem(null)}
-            className={`p-3 rounded-lg border-2 ${
+            className={`p-2 rounded-sm border-2 ${
               activeFile === formattedName 
-                ? 'border-[#e8a87c] bg-[#f8e0d5]' 
-                : 'border-[#f0d5c4] hover:bg-[#f8e0d5]'
+                ? 'border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] bg-[#f8e0d5]' 
+                : 'border-t-[#d4b8a8] border-l-[#d4b8a8] border-r-[#fff5ee] border-b-[#fff5ee] hover:bg-[#f8e0d5]'
             } cursor-pointer transition-all pixel-corners ${
-              hoveredItem === formattedName ? 'transform -translate-y-1 shadow-md' : ''
+              hoveredItem === formattedName ? 'transform -translate-y-0.5 shadow-retro' : ''
             }`}
           >
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center p-1">
               {isFolder ? (
                 <FolderIcon size={40} />
               ) : isSpotify ? (
-                <div className="w-8 h-8 mb-2 relative">
+                <div className="w-10 h-10 mb-2 relative pixel-corners">
                   <img 
                     src={spotifyPlaylists[formattedName.replace('.pdf', '')]?.imageUrl} 
                     alt={item} 
-                    className="w-full h-full object-cover rounded-full border border-[#e8a87c]"
+                    className="w-full h-full object-cover pixel-corners border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8]"
                   />
                 </div>
               ) : (
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="mb-2">
-                  <path d="M21 27H11C9.89543 27 9 26.1046 9 25V7C9 5.89543 9.89543 5 11 5H17.5858C17.851 5 18.1054 5.10536 18.2929 5.29289L22.7071 9.70711C22.8946 9.89464 23 10.149 23 10.4142V25C23 26.1046 22.1046 27 21 27Z" stroke="#e8a87c" strokeWidth="1.5"/>
+                <svg width="32" height="32" viewBox="0 0 32 32" className="mb-2">
+                  <rect 
+                    x="5" 
+                    y="5" 
+                    width="22" 
+                    height="22" 
+                    rx="1" 
+                    fill="#f8e0d5"
+                    stroke="#e8a87c"
+                    strokeWidth="2"
+                  />
+                  <rect 
+                    x="8" 
+                    y="8" 
+                    width="16" 
+                    height="4" 
+                    fill="#e8a87c"
+                  />
                 </svg>
               )}
-              <p className="text-sm text-center truncate w-full text-[#5a4a42]">
+              <p className="text-sm text-center truncate w-full text-[#5a4a42] pixel-font">
                 {item.replace(/_/g, ' ')}
               </p>
               {isSpotify && (
-                <p className="text-xs text-[#a38b7a] mt-1">
+                <p className="text-xs text-[#a38b7a] mt-1 pixel-font">
                   {spotifyPlaylists[formattedName.replace('.pdf', '')]?.trackCount} tracks
                 </p>
               )}
