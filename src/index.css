@@ -17,6 +17,25 @@
   --color-text-light: #a38b7a;
 }
 
+.terminal-font {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.terminal-header {
+  border-bottom: 1px solid #333;
+}
+
+.terminal-body {
+  border-left: 1px solid #333;
+  border-right: 1px solid #333;
+}
+
+.terminal-footer {
+  border-top: 1px solid #333;
+}
+
 * {
   cursor: none !important;
 }

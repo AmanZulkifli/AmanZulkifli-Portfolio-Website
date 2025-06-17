@@ -129,7 +129,7 @@ export default function App() {
   return (
     <>
   {/* 90s-style cursor elements */}
-  <div className="fixed pointer-events-none z-50" style={{
+  <div className="fixed pointer-events-none z-[9999]" style={{
     left: `${cursorPosition.x}px`,
     top: `${cursorPosition.y}px`,
     transform: 'translate(10px, 10px)'
@@ -159,7 +159,7 @@ export default function App() {
 
   {/* Cursor trail remains the same */}
   {[...Array(5)].map((_, i) => (
-    <div key={i} className="fixed pointer-events-none z-40" style={{
+    <div key={i} className="fixed pointer-events-none z-[9998]" style={{
       left: `${cursorPosition.x - i * 2}px`,
       top: `${cursorPosition.y - i * 2}px`,
       width: `${5 - i}px`,

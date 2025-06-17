@@ -1,10 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import EarthSpinnerCanvas from './components/EarthSpinnerCanvas';
+import emailjs from '@emailjs/browser';
 
 export default function LeftPanel() {
+  const [isSending, setIsSending] = useState(false);
   const [time, setTime] = useState(new Date());
   const [onlineStatus, setOnlineStatus] = useState('offline');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [error, setError] = useState('');
+  const emailInputRef = useRef(null);
+  const [terminalInput, setTerminalInput] = useState('');
+  const [terminalOutput, setTerminalOutput] = useState([
+    'MESSAGE TERMINAL v1.0',
+    '---------------------',
+    'Enter sender name:',
+    '>'
+  ]);
+  const [inputStep, setInputStep] = useState(0);
+  const modalRef = useRef(null);
+  const terminalEndRef = useRef(null);
+
+  // Dragging state
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+  // Initialize terminal state
+  const EMAILJS_SERVICE_ID = 'service_cf16n39';
+  const EMAILJS_TEMPLATE_ID = 'template_ta4vx0q';
+  const EMAILJS_PUBLIC_KEY = 'NsxMNsz36D1EdkgXB';
+
 
   useEffect(() => {
     const updateStatus = () => {
@@ -29,17 +55,152 @@ export default function LeftPanel() {
     };
   }, []);
 
+    useEffect(() => {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  }, []);
+
+  useEffect(() => {
+    if (terminalEndRef.current) {
+      terminalEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [terminalOutput]);
+
+
+  const handleMouseDown = (e) => {
+    if (e.target.classList.contains('terminal-header')) {
+      setIsDragging(true);
+      const rect = modalRef.current.getBoundingClientRect();
+      setDragOffset({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      });
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      setPosition({
+        x: e.clientX - dragOffset.x,
+        y: e.clientY - dragOffset.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragOffset]);
+
   const day = time.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Asia/Jakarta' });
   const timeStr = time.toLocaleTimeString('en-US', {
     hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Jakarta', hour12: false,
   });
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-  const handleSubmit = (e) => {
+  const handleTerminalSubmit = async (e) => {
     e.preventDefault();
-    const mailto = `mailto:amans172007@gmail.com?subject=Hello from ${form.name}&body=${encodeURIComponent(form.message)}%0D%0A%0D%0AFrom: ${form.name} (${form.email})`;
-    window.location.href = mailto;
-    setIsModalOpen(false);
+    
+    const newOutput = [...terminalOutput, terminalInput];
+    
+    if (inputStep === 0) {
+      setForm({ ...form, name: terminalInput });
+      newOutput.push('Enter email address:', '>');
+      setInputStep(1);
+    } else if (inputStep === 1) {
+      // Add basic email validation
+      if (!validateEmail(terminalInput)) {
+        newOutput.push('Invalid email format. Please try again:', '>');
+        setTerminalOutput(newOutput);
+        setTerminalInput('');
+        return;
+      }
+      setForm({ ...form, email: terminalInput });
+      newOutput.push('Enter your message:', '>');
+      setInputStep(2);
+    } else if (inputStep === 2) {
+      setForm({ ...form, message: terminalInput });
+      newOutput.push('Send this message? (Y/N)', '>');
+      setInputStep(3);
+    } else if (inputStep === 3) {
+      if (terminalInput.toLowerCase() === 'y') {
+        setIsSending(true);
+        newOutput.push('Sending message...', '>');
+        setTerminalOutput(newOutput);
+        setTerminalInput('');
+        
+        try {
+          // Send email using EmailJS
+          const response = await emailjs.send(
+            EMAILJS_SERVICE_ID,
+            EMAILJS_TEMPLATE_ID,
+            {
+              from_name: form.name,
+              from_email: form.email,
+              message: form.message,
+              reply_to: form.email // Add this to ensure replies go to the sender
+            }
+          );
+
+          if (response.status === 200) {
+            const successOutput = [...newOutput, '✓ Message sent successfully!', 'Terminal session ended.', '---------------------'];
+            setTerminalOutput(successOutput);
+          } else {
+            throw new Error('Failed to send email');
+          }
+        } catch (error) {
+          console.error('Email sending error:', error);
+          const errorOutput = [...newOutput, '✗ Failed to send message. Please try again later.', '>'];
+          setTerminalOutput(errorOutput);
+          setInputStep(2); // Go back to message input step
+        } finally {
+          setIsSending(false);
+        }
+        
+        setInputStep(4);
+      } else if (terminalInput.toLowerCase() === 'n') {
+        newOutput.push('Message discarded.', '---------------------');
+        setInputStep(4);
+      } else {
+        newOutput.push('Invalid input. Please enter Y or N', '>');
+        return;
+      }
+    } else {
+      setIsModalOpen(false);
+      resetTerminal();
+      return;
+    }
+    
+    if (inputStep !== 3 || terminalInput.toLowerCase() !== 'y') {
+      setTerminalOutput(newOutput);
+    }
+    setTerminalInput('');
+  };
+
+    const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+
+  const resetTerminal = () => {
+    setTerminalOutput([
+      'MESSAGE TERMINAL v1.0',
+      '---------------------',
+      'Enter sender name:',
+      '>'
+    ]);
+    setTerminalInput('');
+    setInputStep(0);
+    setForm({ name: '', email: '', message: '' });
   };
 
   const statusColors = {
@@ -121,7 +282,8 @@ export default function LeftPanel() {
         <h3 className="text-xs font-bold text-[#a38b7a] mb-1">ABOUT ME</h3>
         <p className="text-xs leading-relaxed">
           Still learning, always building and passionate about design, code, and creating meaningful things.
-          Currently focused on frontend development with React, Tailwind, and Bootstrap CSS. I also have experience working with the Laravel framework for backend development.        </p>
+          Currently focused on frontend development with React, Tailwind, and Bootstrap CSS. I also have experience working with the Laravel framework for backend development.
+        </p>
       </div>
 
       {/* Project Info */}
@@ -136,60 +298,75 @@ export default function LeftPanel() {
         <p className="text-xs text-[#a38b7a] italic">🚧 UNDER CONSTRUCTION</p>
       </div>
 
-      {/* Contact Modal */}
+      {/* Terminal Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4">
-          <div className="w-full max-w-md bg-[#f8e0d5] border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] pixel-corners p-4 relative">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-[#e8a87c] text-[#fff5ee] pixel-corners"
+        <div 
+          className="fixed inset-0 z-50 bg-black/20 flex items-start justify-center px-4 pt-16"
+          onMouseDown={() => setIsDragging(false)}
+        >
+          <div 
+            ref={modalRef}
+            className="w-full max-w-2xl bg-[#f8e0d5] text-[#5a4a42] border-2 border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#d4b8a8] border-b-[#d4b8a8] p-1 relative pixel-corners"
+            style={{
+              transform: `translate(${position.x}px, ${position.y}px)`,
+              cursor: isDragging ? 'grabbing' : 'default',
+            }}
+          >
+            <div 
+              className="terminal-header bg-[#e8a87c] p-2 flex justify-between items-center cursor-grab"
+              onMouseDown={handleMouseDown}
             >
-              ×
-            </button>
-            <h2 className="text-lg font-bold mb-3">GET IN TOUCH</h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              {['name', 'email', 'message'].map((field) => (
-                <div key={field}>
-                  <label htmlFor={field} className="block text-xs font-bold text-[#5a4a42] mb-1">
-                    {field.toUpperCase()}*
-                  </label>
-                  {field === 'message' ? (
-                    <textarea
-                      id={field}
-                      name={field}
-                      rows="4"
-                      required
-                      value={form[field]}
-                      onChange={handleChange}
-                      placeholder="Type your message..."
-                      className="w-full border-2 border-[#d4b8a8] bg-[#fff5ee] text-[#5a4a42] placeholder:text-[#a38b7a] p-2 text-xs pixel-corners"
-                    />
-                  ) : (
-                    <input
-                      id={field}
-                      name={field}
-                      type={field === 'email' ? 'email' : 'text'}
-                      required
-                      value={form[field]}
-                      onChange={handleChange}
-                      placeholder={`Enter your ${field}`}
-                      className="w-full border-2 border-[#d4b8a8] bg-[#fff5ee] text-[#5a4a42] placeholder:text-[#a38b7a] p-2 text-xs pixel-corners"
-                    />
-                  )}
-                </div>
-              ))}
-              <div className="flex justify-between items-center mt-4">
-                <button
-                  type="submit"
-                  className="bg-[#e8a87c] text-[#fff5ee] pixel-corners px-4 py-1 text-xs font-bold hover:bg-[#d4b8a8] transition-colors"
-                >
-                  SEND MESSAGE
-                </button>
-                <p className="text-xs text-[#a38b7a] max-w-[160px]">
-                  By submitting, you agree to our information handling policy.
-                </p>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-[#d4b8a8] border border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#5a4a42] border-b-[#5a4a42]"></div>
+                <div className="w-3 h-3 bg-[#d4b8a8] border border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#5a4a42] border-b-[#5a4a42]"></div>
+                <div className="w-3 h-3 bg-[#d4b8a8] border border-t-[#fff5ee] border-l-[#fff5ee] border-r-[#5a4a42] border-b-[#5a4a42]"></div>
               </div>
-            </form>
+              <span className="text-xs font-bold">MESSAGE TERMINAL v1.0</span>
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  resetTerminal();
+                }}
+                className="w-6 h-6 flex items-center justify-center text-[#5a4a42] hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="terminal-body p-3 h-64 overflow-y-auto bg-[#f8e0d5] flex">
+              {/* ASCII Art Column */}
+              <div className="w-1/3 pr-2 border-r border-[#d4b8a8] flex flex-col">
+                <pre className="text-xs terminal-font text-[#5a4a42] flex-1">
+                  <EarthSpinnerCanvas />
+                </pre>
+                <div className="text-xs text-[#a38b7a] italic mt-auto">
+                  AmanOS v1.0
+                </div>
+              </div>
+              
+              {/* Terminal Content Column */}
+              <div className="w-2/3 pl-2 flex flex-col">
+                <pre className="whitespace-pre-wrap break-words text-xs terminal-font flex-1">
+                  {terminalOutput.join('\n')}
+                </pre>
+                <div ref={terminalEndRef} className="flex items-center border-t border-[#d4b8a8] pt-1">
+                  <span className="text-[#5a4a42] mr-2">{'>'}</span>
+                  <form onSubmit={handleTerminalSubmit} className="flex-1">
+                    <input
+                      type="text"
+                      value={terminalInput}
+                      onChange={(e) => setTerminalInput(e.target.value)}
+                      className="w-full bg-[#f8e0d5] text-[#5a4a42] border-none outline-none terminal-font text-xs"
+                      autoFocus
+                    />
+                  </form>
+                </div>
+              </div>
+            </div>
+            
+            <div className="terminal-footer bg-[#e8a87c] p-1 text-xs text-center border-t border-[#d4b8a8]">
+              By filling out this form, you consent to the collection and use of your information.
+            </div>
           </div>
         </div>
       )}
